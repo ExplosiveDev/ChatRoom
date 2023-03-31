@@ -49,8 +49,8 @@
             <Button Style="{StaticResource YellowButton}" DockPanel.Dock="Left">Message:</Button>
             <Button Style="{StaticResource RedButton}" Click="Exit_Button_Click" DockPanel.Dock="Right">Exit</Button>
             <Button Click="Send_Button_Click" DockPanel.Dock="Right">Send</Button>
-            <Button Click="Join_Button_Click" DockPanel.Dock="Right">Join</Button>
-            <Button DockPanel.Dock="Right">Leave</Button>
+            <Button Click="Join_Button_Click" DockPanel.Dock="Right">Connect</Button>
+            <Button DockPanel.Dock="Right" Click="Disconnect_Button_Click">Disconnect</Button>
             <TextBox Name="MessageTextBox" VerticalContentAlignment="Center"></TextBox>
         </DockPanel>
         <Button Style="{StaticResource YellowButton}" DockPanel.Dock="Top" >Chat</Button>

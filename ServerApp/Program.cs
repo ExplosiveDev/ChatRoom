@@ -4,43 +4,46 @@ using System.Net.Sockets;
 using System.Text;
 
 ChatServer chatserver = new ChatServer();
-chatserver.Start();
+
+try
+{
+
+    chatserver.Start();
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex.Message);
+}
+
 class ChatServer
 {
     const short port = 4040;
-    const string JOIN_CMD = "$<join>";
-    HashSet<IPEndPoint> members = new HashSet<IPEndPoint>();
-    UdpClient server = new UdpClient(port);
-    IPEndPoint clientIPEndPoint = null;
-    private void AddMember(IPEndPoint member)
+    const string address = "127.0.0.1";
+
+    TcpListener listener = null;
+
+    public ChatServer()
     {
-        members.Add(member);
-        Console.WriteLine("Member was added!!");
-        Console.WriteLine($@" {clientIPEndPoint} Member was added!!");
-    }
-    private void SendToAll(byte[] data)
-    {
-        foreach (IPEndPoint member in members)
-        {
-            server.SendAsync(data, data.Length, member);
-        }
+        listener = new TcpListener(IPAddress.Parse(address),port);
+
     }
     public void Start()
     {
+        listener.Start();
+        Console.WriteLine("Waiting for connection ......");
+        TcpClient client = listener.AcceptTcpClient();
+        Console.WriteLine("Connceted");
+        var NetStream = client.GetStream();
+        StreamReader sr = new StreamReader(NetStream);
+        StreamWriter sw = new StreamWriter(NetStream);
+
         while (true)
-        {
-            byte[] data = server.Receive(ref clientIPEndPoint);
-            string message = Encoding.Unicode.GetString(data);
-            Console.WriteLine($"{message} at {DateTime.Now.ToShortTimeString()} from {clientIPEndPoint}");
-            switch (message)
-            {
-                case JOIN_CMD:
-                    AddMember(clientIPEndPoint);
-                    break;
-                default:
-                    SendToAll(data);
-                    break;
-            }
+        { 
+            string? message = sr.ReadLine();
+            if(message == "exit") {listener.Start(); break;}
+            Console.WriteLine($"{message} at {DateTime.Now.ToShortTimeString()} from {client.Client.LocalEndPoint}");
+            sw.WriteLine(message);
+            sw.Flush();
         }
     }
 }
